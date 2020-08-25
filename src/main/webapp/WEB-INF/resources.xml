@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+
+
+<Resource id="PostgreSQL_Database" type="DataSource">
+    #  PostgreSQL example
+    #
+    #  This connector will not work until you download the driver at:
+    #  http://jdbc.postgresql.org/download.html
+    JdbcDriver   org.postgresql.Driver
+    JdbcUrl  jdbc:postgresql://localhost:5432/fant
+    UserName     postgres
+    Password     mysecretpassword
+</Resource>
+
