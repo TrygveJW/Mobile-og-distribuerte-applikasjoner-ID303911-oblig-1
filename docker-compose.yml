@@ -1,0 +1,137 @@
+version: '3.8'
+
+#x-DbLoggin:
+#  environment:
+#    &db-login
+#    SQLURL: "jdbc:postgresql://${MASTER_IP}:5432/fant"
+#    POSGRESS_USER: "postgres"
+#    POSTGRES_DB: "fant"
+#    POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
+
+
+
+
+
+services:
+#  postgres_db:
+#    image: postgres
+#    container_name: postgres_db
+#
+#
+#
+#    environment:
+#      << :  *db-login
+##      PGDATA: "/var/lib/postgresql/data/pgdata"
+#
+#
+##    volumes:
+##      - type: volume
+##        source: db_data
+##        target: /var/lib/postgresql/data
+##      - type: bind
+##        source: ./docker_files/posgress/db_init_scripts
+##        target: /docker-entrypoint-initdb.d
+#
+#    networks:
+#      db_network:
+#
+#    ports:
+#      - "${MASTER_IP}:5432:5432"
+#
+#
+#    restart: unless-stopped
+
+  postgres_db:
+    image: postgres
+    #    container_name: postgres_db
+
+    environment:
+      SQLURL: "jdbc:postgresql://127.0.0.1:5432/local_db"
+      POSGRESS_USER: "postgres"
+      POSTGRES_DB: "local_db"
+      POSTGRES_PASSWORD: "password"
+      PGDATA: "/var/lib/postgresql/data/pgdata"
+
+
+    volumes:
+      - type: volume
+        source: db_data
+        target: /var/lib/postgresql/data
+
+
+
+    ports:
+      - "127.0.0.1:5432:5432"
+
+
+    restart: unless-stopped
+
+
+  api_server:
+
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
+
+    environment:
+      PAYARA_ARGS: "--debug"
+
+
+    ports:
+      - "8080:8080"
+      - "4848:4848"
+      - "8181:8181"
+      - "9009:9009"
+
+    restart: unless-stopped
+
+
+
+  # https://github.com/mikael2/payara-postgres-nginx/
+#  nginx:
+#    container_name: nginx
+#
+#    build:
+#      context: ./DockerFiles/nginx_certbot
+#      dockerfile: Dockerfile
+#
+#    volumes:
+#      - type: volume
+#        source: nginx_data
+#        target: /etc/letsencrypt
+#
+#    env_file:
+#      - ./config_files/nginx_cerbot.env
+#
+#    environment:
+#      DOMAIN: "${API_DOMAIN}"
+#      LE_EMAIL: "${MAIL_USERNAME}"
+#    logging:
+#      options:
+#        max-size: "50m"
+#        max-file: "3"
+#
+#    ports:
+#      - "80:80"
+#      - "443:443"
+#
+#    networks:
+#      frontend:
+#
+#    depends_on:
+#      - api_server
+#
+#    restart: unless-stopped
+
+
+networks:
+  db_network:
+  frontend:
+  backend:
+  ticketNetwork:
+    external: true
+
+
+volumes:
+  db_data:
+  nginx_data:
