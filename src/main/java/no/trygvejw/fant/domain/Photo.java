@@ -5,6 +5,10 @@
  */
 package no.trygvejw.fant.domain;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.io.Serializable;
 import javax.persistence.*;
 
@@ -13,6 +17,9 @@ import javax.persistence.*;
  * @author trygve
  */
 @Entity
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Photo implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -27,46 +34,4 @@ public class Photo implements Serializable {
     @ManyToOne
     Item photoItem;
 
-    public Photo() {
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public long getFilesize() {
-        return filesize;
-    }
-
-    public void setFilesize(long filesize) {
-        this.filesize = filesize;
-    }
-
-    public String getMimeType() {
-        return mimeType;
-    }
-
-    public void setMimeType(String mimeType) {
-        this.mimeType = mimeType;
-    }
-
-    public Item getPhotoItem() {
-        return photoItem;
-    }
-
-    public void setPhotoItem(Item photoItem) {
-        this.photoItem = photoItem;
-    }
 }

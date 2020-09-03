@@ -6,7 +6,6 @@
 package no.trygvejw.fant;
 
 
-import com.sun.management.DiagnosticCommandMBean;
 import net.coobird.thumbnailator.Thumbnails;
 import no.ntnu.tollefsen.auth.AuthenticationService;
 import no.ntnu.tollefsen.auth.Group;
@@ -22,15 +21,15 @@ import no.ntnu.tollefsen.auth.User;
 import no.trygvejw.fant.domain.Item;
 import no.trygvejw.fant.domain.Photo;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.glassfish.jersey.media.multipart.ContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataBodyPart;
 import org.glassfish.jersey.media.multipart.FormDataMultiPart;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 
-import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
-import java.awt.*;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigDecimal;
@@ -56,6 +55,9 @@ public class FantService {
     @Context
     SecurityContext securityContext;
 
+    //@Inject
+    //JsonWebToken principal;
+
     @PersistenceContext
     EntityManager entityManager;
 
@@ -74,7 +76,7 @@ public class FantService {
     @PUT
     @Path("purchase")
     @RolesAllowed({Group.USER})
-    public Response purchase(Long itemid) {
+    public Response purchase(@QueryParam("itemid") Long itemid) {
 
         Item item = entityManager.find(Item.class, itemid);
 
@@ -82,9 +84,8 @@ public class FantService {
             if (item.getItemBuyer() == null){
                 User buyer = this.getCurrentUser();
                 item.setItemBuyer(buyer);
-                //
-                // TODO: send mail
-                //
+                Mail.sendEmail(item.getItemOwner().getEmail(), "your thing has been sold", "somthing somthing bip bop" );
+
                 return Response.ok().build();
             }
 
@@ -96,7 +97,7 @@ public class FantService {
     @DELETE
     @Path("delete")
     @RolesAllowed({Group.USER})
-    public Response delete(Long itemid) {
+    public Response delete(@QueryParam("itemid") Long itemid) {
         Item item = entityManager.find(Item.class, itemid);
         if (item != null){
             User user = this.getCurrentUser();
@@ -113,10 +114,18 @@ public class FantService {
     @Path("add-item")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @RolesAllowed({Group.USER})
-    public Response addItem(@FormDataParam("title")String title, @FormDataParam("desc")String description, @FormDataParam("price")BigDecimal price, FormDataMultiPart photos) {
-
+    public Response addItem(
+            @FormDataParam("title")String title,
+            @FormDataParam("desc")String description,
+            @FormDataParam("price")BigDecimal price,
+            FormDataMultiPart photos
+    ){
         User user = this.getCurrentUser();
         Item newItem = new Item();
+
+        //System.out.printf("Pname<%s>", principal.getName());
+        //System.out.printf("Psub<%s>", principal.getSubject());
+        //System.out.printf("SC name<%s>", securityContext.getUserPrincipal().getName());
 
         newItem.setItemOwner(user);
         newItem.setTitle(title);
@@ -148,7 +157,9 @@ public class FantService {
                 }
 
             }
-        } catch (Exception e){}
+        } catch (Exception e){
+            e.printStackTrace();
+        }
         entityManager.persist(newItem);
 
         return Response.ok().build();
@@ -187,6 +198,7 @@ public class FantService {
 
 
     private User getCurrentUser(){
+        //System.out.printf("Pname low <%s>", principal.getName());
         return entityManager.find(User.class, securityContext.getUserPrincipal().getName());
     }
 }

@@ -44,6 +44,9 @@
           <element id="library" level="project" name="Maven: com.h2database:h2:1.4.200" />
           <element id="library" level="project" name="Maven: org.projectlombok:lombok:1.18.12" />
           <element id="library" level="project" name="Maven: org.postgresql:postgresql:42.2.14" />
+          <element id="library" level="project" name="Maven: org.apache.geronimo.specs:geronimo-javamail_1.4_spec:1.7.1" />
+          <element id="library" level="project" name="Maven: javax.mail:mail:1.4.7" />
+          <element id="library" level="project" name="Maven: javax.activation:activation:1.1" />
         </element>
       </element>
       <element id="directory" name="META-INF">

@@ -19,6 +19,7 @@ import javax.security.enterprise.identitystore.IdentityStoreHandler;
 import javax.security.enterprise.identitystore.PasswordHash;
 import javax.servlet.http.HttpServletRequest;
 import javax.sql.DataSource;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
@@ -163,11 +164,11 @@ public class AuthenticationService {
      * @param pwd
      * @return
      */
-    @POST
+/*    @POST
     @Path("create")
     //@Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response createUser(@FormParam("uid") String uid, @FormParam("pwd") String pwd) {
+    public Response createUser(@FormParam("uid") @Email String uid, @FormParam("pwd") @NotBlank String pwd) {
         User user = em.find(User.class, uid);
         if (user != null) {
             log.log(Level.INFO, "user already exists {0}", uid);
@@ -180,10 +181,17 @@ public class AuthenticationService {
             user.getGroups().add(usergroup);
             return Response.ok(em.merge(user)).build();
         }
-    }
+    }*/
 
 
-    public User createUser(String uid, String pwd, String firstName, String lastName) {
+    @POST
+    @Path("create")
+    @Produces(MediaType.APPLICATION_JSON)
+    public User createUser(
+            @FormParam("uid") @NotBlank String  uid,
+            @FormParam("pwd") @NotBlank String pwd,
+            @FormParam("mail") @NotBlank String mail,
+            @FormParam("name")String name) {
         User user = em.find(User.class, uid);
         if (user != null) {
             log.log(Level.INFO, "user already exists {0}", uid);
@@ -192,8 +200,8 @@ public class AuthenticationService {
             user = new User();
             user.setUserid(uid);
             user.setPassword(hasher.generate(pwd.toCharArray()));
-            user.setFirstName(firstName);
-            user.setLastName(lastName);
+            user.setEmail(mail);
+            user.setName(name);
             Group usergroup = em.find(Group.class, Group.USER);
             user.getGroups().add(usergroup);
             return em.merge(user);

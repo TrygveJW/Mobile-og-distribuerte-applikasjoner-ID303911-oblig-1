@@ -1,55 +1,26 @@
 version: '3.8'
 
-#x-DbLoggin:
-#  environment:
-#    &db-login
-#    SQLURL: "jdbc:postgresql://${MASTER_IP}:5432/fant"
-#    POSGRESS_USER: "postgres"
-#    POSTGRES_DB: "fant"
-#    POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
+x-DbLoggin:
+  environment:
+    &db-login
+#    SQLURL: "jdbc:postgresql://10.20.30.40:5432/local_db"
+    POSGRESS_USER: "postgres"
+    POSTGRES_DB: "local_db"
+    POSTGRES_PASSWORD: "password"
 
-
-
+x-CertbotConf:
+  environment:
+    &certbot-conf
+    DOMAIN: "${API_DOMAIN}"
+    LE_EMAIL: "${MAIL_USERNAME}"
 
 
 services:
-#  postgres_db:
-#    image: postgres
-#    container_name: postgres_db
-#
-#
-#
-#    environment:
-#      << :  *db-login
-##      PGDATA: "/var/lib/postgresql/data/pgdata"
-#
-#
-##    volumes:
-##      - type: volume
-##        source: db_data
-##        target: /var/lib/postgresql/data
-##      - type: bind
-##        source: ./docker_files/posgress/db_init_scripts
-##        target: /docker-entrypoint-initdb.d
-#
-#    networks:
-#      db_network:
-#
-#    ports:
-#      - "${MASTER_IP}:5432:5432"
-#
-#
-#    restart: unless-stopped
-
   postgres_db:
     image: postgres
-    #    container_name: postgres_db
 
     environment:
-      SQLURL: "jdbc:postgresql://127.0.0.1:5432/local_db"
-      POSGRESS_USER: "postgres"
-      POSTGRES_DB: "local_db"
-      POSTGRES_PASSWORD: "password"
+      << :  *db-login
       PGDATA: "/var/lib/postgresql/data/pgdata"
 
 
@@ -57,14 +28,25 @@ services:
       - type: volume
         source: db_data
         target: /var/lib/postgresql/data
+#      - type: bind
+#        source: ./docker_files/posgress/db_init_scripts
+#        target: /docker-entrypoint-initdb.d
 
-
+    networks:
+      db_network:
+        ipv4_address: "10.20.30.40"
 
     ports:
-      - "127.0.0.1:5432:5432"
-
+      - "5432:5432"
 
     restart: unless-stopped
+
+
+  mail:
+    image: namshi/smtp
+
+    networks:
+      frontend:
 
 
   api_server:
@@ -73,8 +55,18 @@ services:
       context: ./
       dockerfile: ./Dockerfile
 
+    volumes:
+      - type: volume
+        source: fant_images
+        target: /fant_images
+
     environment:
       PAYARA_ARGS: "--debug"
+
+    networks:
+      db_network:
+      frontend:
+
 
 
     ports:
@@ -126,12 +118,15 @@ services:
 
 networks:
   db_network:
-  frontend:
-  backend:
-  ticketNetwork:
-    external: true
+    ipam:
+      driver: default
+      config:
+        - subnet: 10.0.0.0/8
 
+
+  frontend:
 
 volumes:
   db_data:
+  fant_images:
   nginx_data:
