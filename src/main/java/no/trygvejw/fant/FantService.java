@@ -43,7 +43,7 @@ import java.util.UUID;
  *
  * @author trygve
  */
-@Path("test")
+@Path("api")
 @Stateless
 @DeclareRoles({Group.USER})
 public class FantService {
