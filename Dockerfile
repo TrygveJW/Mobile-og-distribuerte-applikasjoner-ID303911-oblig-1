@@ -8,6 +8,9 @@ USER payara
 
 COPY ./target/fant-1.0-SNAPSHOT.war $DEPLOY_DIR
 
-
 EXPOSE 8080
+
+CMD ["--deploymentDir", "/opt/payara/deployments", "--contextroot", "my"]
+
+
 
