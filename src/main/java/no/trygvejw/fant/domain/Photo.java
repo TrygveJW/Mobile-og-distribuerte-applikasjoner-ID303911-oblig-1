@@ -31,7 +31,6 @@ public class Photo implements Serializable {
     long filesize;
     String mimeType;
 
-    @ManyToOne
-    Item photoItem;
+
 
 }

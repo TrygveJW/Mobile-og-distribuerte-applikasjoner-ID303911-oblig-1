@@ -35,6 +35,7 @@ import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -45,7 +46,7 @@ import java.util.UUID;
  */
 @Path("api")
 @Stateless
-@DeclareRoles({Group.USER})
+//@DeclareRoles({Group.USER})
 public class FantService {
 
 
@@ -67,7 +68,7 @@ public class FantService {
 
     @GET
     @Path("items")
-    @RolesAllowed({Group.USER})
+    //@RolesAllowed({Group.USER})
     @Produces(MediaType.APPLICATION_JSON)
     public List<Item> getItems() {
         return entityManager.createNativeQuery("SELECT * FROM Item", Item.class).getResultList();
@@ -131,13 +132,17 @@ public class FantService {
         newItem.setTitle(title);
         newItem.setDescription(description);
         newItem.setPrice(price);
+        ArrayList<Photo> p = new ArrayList<>();
 
 
         try{
 
 
             List<FormDataBodyPart> images = photos.getFields("image");
+
+
             if(images != null) {
+
 
                 for (FormDataBodyPart part : images) {
                     InputStream is = part.getEntityAs(InputStream.class);
@@ -151,15 +156,23 @@ public class FantService {
                     photo.setName(meta.getFileName());
                     photo.setFilesize(meta.getSize());
                     photo.setMimeType(meta.getType());
-                    photo.setPhotoItem(newItem);
+
+
+
+                    p.add(photo);
+
+
+
 
                     entityManager.persist(photo);
                 }
 
             }
+
         } catch (Exception e){
             e.printStackTrace();
         }
+        newItem.setItemImages(p);
         entityManager.persist(newItem);
 
         return Response.ok().build();
