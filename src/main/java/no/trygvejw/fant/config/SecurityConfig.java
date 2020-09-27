@@ -22,8 +22,8 @@ import org.eclipse.microprofile.auth.LoginConfig;
         serverName = "postgres_db",  // set the property
         portNumber = 5432,        // set the property
         databaseName = "local_db",    // set the property
-        user = "postgres",
-        password = "password")
+        user = "test",
+        password = "test123")
 @DatabaseIdentityStoreDefinition(
         dataSourceLookup = "java:global/jdbc/DemoDataSource",
         callerQuery="select password from auser where userid = ?",
@@ -33,5 +33,7 @@ import org.eclipse.microprofile.auth.LoginConfig;
 @DeclareRoles({Group.ADMIN,Group.USER})
 @LoginConfig(authMethod = "MP-JWT",realmName = "template")
 public class SecurityConfig {
-    
+
+
+
 }

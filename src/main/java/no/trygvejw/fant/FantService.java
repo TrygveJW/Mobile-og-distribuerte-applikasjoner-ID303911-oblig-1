@@ -85,6 +85,7 @@ public class FantService {
             if (item.getItemBuyer() == null){
                 User buyer = this.getCurrentUser();
                 item.setItemBuyer(buyer);
+
                 Mail.sendEmail(item.getItemOwner().getEmail(), "your thing has been sold", "somthing somthing bip bop" );
 
                 return Response.ok().build();
