@@ -1,19 +1,21 @@
 package no.trygvejw.fant;
 
 
+import javax.ejb.Asynchronous;
+import javax.ejb.Stateless;
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.util.Properties;
 
 
-
+@Stateless
 public class Mail {
     private static final String senderMail = "noreply@fant.no";//System.getenv("MAIL_USERNAME");
     //private static final String senderPass = System.getenv("MAIL_PASSWORD");
 
-
-    public static void sendEmail(String to, String subject, String contents){
+    @Asynchronous
+    public  void sendEmail(String to, String subject, String contents){
         String host="mail";//"smtp.gmail.com";
         final String user=senderMail;
         //final String password=senderPass;

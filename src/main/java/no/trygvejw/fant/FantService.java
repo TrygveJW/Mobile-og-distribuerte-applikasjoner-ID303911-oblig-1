@@ -63,6 +63,9 @@ public class FantService {
     EntityManager entityManager;
 
     @Inject
+    Mail mail;
+
+    @Inject
     @ConfigProperty(name = "photo.storage.path", defaultValue = "fant_images")
     String photoPath;
 
@@ -86,7 +89,7 @@ public class FantService {
                 User buyer = this.getCurrentUser();
                 item.setItemBuyer(buyer);
 
-                Mail.sendEmail(item.getItemOwner().getEmail(), "your thing has been sold", "somthing somthing bip bop" );
+                mail.sendEmail(item.getItemOwner().getEmail(), "your thing has been sold", "somthing somthing bip bop" );
 
                 return Response.ok().build();
             }
